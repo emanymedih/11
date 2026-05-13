@@ -2,6 +2,81 @@ const STORAGE_KEY = "szd-vda-daily-v1";
 
 let currentFocusIndex = 0;
 
+const sourcesVerified = "13 мая 2026";
+
+const sources = {
+  astroSun: {
+    title: "Astrodienst: Sun",
+    url: "https://www.astro.com/astrowiki/en/Sun",
+    theme: "жизненная сила, идентичность, творческая интеграция"
+  },
+  astroPisces: {
+    title: "Astrodienst: Pisces",
+    url: "https://www.astro.com/astrowiki/en/Pisces",
+    theme: "Рыбы, чувствительность, служение, растворение границ"
+  },
+  astroTenth: {
+    title: "Astrodienst: Tenth House",
+    url: "https://www.astro.com/astrowiki/en/Tenth_house",
+    theme: "профессия, общественная роль, достижения, признание"
+  },
+  skyTenth: {
+    title: "Skyscript: 10th House",
+    url: "https://www.skyscript.co.uk/10.html",
+    theme: "репутация, честь, профессия, публичное положение"
+  },
+  astroMoon: {
+    title: "Astrodienst: Moon",
+    url: "https://www.astro.com/astrowiki/en/Moon",
+    theme: "эмоциональные потребности, инстинктивная реакция, безопасность"
+  },
+  astroCancer: {
+    title: "Astrodienst: Cancer",
+    url: "https://www.astro.com/astrowiki/en/Cancer",
+    theme: "Рак, эмпатия, забота, эмоциональная восприимчивость"
+  },
+  skyCancer: {
+    title: "Skyscript: Cancer",
+    url: "https://www.skyscript.co.uk/pdf/signs/cancer/index.html",
+    theme: "чувствительность, память, эмоциональные впечатления"
+  },
+  astroEighth: {
+    title: "Astrodienst: Eighth House",
+    url: "https://www.astro.com/astrowiki/en/Eighth_house",
+    theme: "кризисы, метаморфоза, отпускание, глубинные процессы"
+  },
+  skyEighth: {
+    title: "Skyscript: 8th House",
+    url: "https://www.skyscript.co.uk/8.html",
+    theme: "страхи, тревога, потери, уязвимость, трансформация"
+  },
+  astroMars: {
+    title: "Astrodienst: Mars",
+    url: "https://www.astro.com/astrowiki/en/Mars",
+    theme: "инициатива, действие, самоутверждение"
+  },
+  astroSaturn: {
+    title: "Astrodienst: Saturn",
+    url: "https://www.astro.com/astrowiki/en/Saturn",
+    theme: "границы, ответственность, зрелость, дисциплина"
+  },
+  astroAspect: {
+    title: "Astrodienst: Aspects",
+    url: "https://www.astro.com/astrowiki/en/Aspect",
+    theme: "напряженные аспекты как потенциал развития"
+  },
+  astroUranus: {
+    title: "Astrodienst: Uranus",
+    url: "https://www.astro.com/astrowiki/en/Uranus",
+    theme: "освобождение, внезапность, разрыв с привычным"
+  },
+  astroNeptune: {
+    title: "Astrodienst: Neptune",
+    url: "https://www.astro.com/astrowiki/en/Neptune",
+    theme: "интуиция, вдохновение, растворение, риск иллюзии"
+  }
+};
+
 const indicators = [
   {
     id: "visibleExpertise",
@@ -10,7 +85,13 @@ const indicators = [
     essence: "Писать, говорить, вести канал, давать разборы, консультировать.",
     target: "Сделать один видимый экспертный шаг от своего имени.",
     avoid: "Прятаться в подготовку, ждать идеальной формы, оставаться невидимой.",
-    risk: "Сила есть, но ее не видят и не связывают с тобой."
+    risk: "Сила есть, но ее не видят и не связывают с тобой.",
+    sourceIds: ["astroSun", "astroTenth", "skyTenth"],
+    recommendations: [
+      "Опирайся на Солнце как центр личности: проявляй не роль помощницы, а собственный авторский вектор.",
+      "Используй 10 дом как поле профессии и общественной роли: делай шаги, которые могут быть увидены и признаны.",
+      "Показывай экспертность через публичный результат: разбор, консультацию, кейс, вывод, позицию."
+    ]
   },
   {
     id: "meaningfulUse",
@@ -19,7 +100,13 @@ const indicators = [
     essence: "Работа, где есть помощь, психология, обучение, творчество или социальная польза.",
     target: "Выбрать действие, которое кому-то реально помогает или проясняет ситуацию.",
     avoid: "Делать только механическое, чужое или бессмысленное.",
-    risk: "Витальность падает, если действие не связано со смыслом."
+    risk: "Витальность падает, если действие не связано со смыслом.",
+    sourceIds: ["astroPisces", "astroNeptune", "astroTenth"],
+    recommendations: [
+      "Проверяй действие по Рыбам: есть ли в нем помощь, смысл, сострадание, творчество или тонкое понимание.",
+      "Не растворяйся в пользе без формы: связывай смысл с профессиональной ролью 10 дома.",
+      "Выбирай формат, где интуиция становится полезной для другого человека: разбор, обучение, рекомендация."
+    ]
   },
   {
     id: "methodPackaging",
@@ -28,7 +115,13 @@ const indicators = [
     essence: "Интуиция становится системой: диагностика, этапы, выводы, рекомендации.",
     target: "Оформить ощущение в структуру, схему, чеклист или понятный вывод.",
     avoid: "Оставаться на уровне 'я чувствую', не показывая опору мысли.",
-    risk: "Ценность сложно увидеть, если нет формы."
+    risk: "Ценность сложно увидеть, если нет формы.",
+    sourceIds: ["astroPisces", "astroNeptune", "astroSaturn"],
+    recommendations: [
+      "Давай Нептуну и Рыбам сосуд Сатурна: схема, этапы, границы, критерии.",
+      "Переводи чувствование в метод: наблюдение, символ, вывод, рекомендация, следующий шаг.",
+      "Если смысл расплывается, возвращайся к структуре: что я вижу, что это значит, что делать."
+    ]
   },
   {
     id: "professionalResponsibility",
@@ -37,7 +130,13 @@ const indicators = [
     essence: "Вести проект, делать авторский продукт, выступать от своего имени.",
     target: "Взять авторство за решение, продукт, позицию или следующий шаг.",
     avoid: "Ждать разрешения, быть только помощницей, не называть свою роль.",
-    risk: "Ответственность есть, но статус остается незафиксированным."
+    risk: "Ответственность есть, но статус остается незафиксированным.",
+    sourceIds: ["astroSun", "astroTenth", "astroSaturn"],
+    recommendations: [
+      "10 дом требует авторства: называй свою роль, продукт, решение и область ответственности.",
+      "Сатурн усиливает статус через зрелость: обещай только то, что можешь выдержать и довести.",
+      "Солнце в профессиональной зоне просит говорить от первого лица: я вижу, я предлагаю, я веду."
+    ]
   },
   {
     id: "statusProof",
@@ -46,7 +145,13 @@ const indicators = [
     essence: "Кейсы, результаты, отзывы, портфолио, публикации.",
     target: "Зафиксировать одно доказательство ценности: результат, отзыв, кейс, публикацию.",
     avoid: "Обесценивать результат или считать его недостаточно важным.",
-    risk: "Цена и уверенность проседают без видимых подтверждений."
+    risk: "Цена и уверенность проседают без видимых подтверждений.",
+    sourceIds: ["astroTenth", "skyTenth", "astroSaturn"],
+    recommendations: [
+      "Фиксируй плоды 10 дома: кейсы, признание, отзывы, публикации, результаты труда.",
+      "Не оставляй достижения в частном поле: статус появляется, когда результат имеет форму и место.",
+      "Используй Сатурн как архив доказательств: регулярно собирай то, что подтверждает компетентность."
+    ]
   },
   {
     id: "emotionalPause",
@@ -55,7 +160,13 @@ const indicators = [
     essence: "Перед обидой спросить: я защищаюсь или решаю задачу?",
     target: "Сделать паузу и назвать реальную задачу до ответа.",
     avoid: "Реагировать из обиды, защиты или внутренней тревоги.",
-    risk: "Эмоция начинает управлять действием."
+    risk: "Эмоция начинает управлять действием.",
+    sourceIds: ["astroMoon", "astroCancer", "skyCancer"],
+    recommendations: [
+      "Луна показывает первичную реакцию до фильтра сознания: сначала назови чувство, потом выбирай действие.",
+      "Рак усиливает восприимчивость: не делай чувствительность доказательством угрозы.",
+      "Если включилась защита, создай безопасную паузу и возвращайся к фактам ситуации."
+    ]
   },
   {
     id: "anxietyToAction",
@@ -64,7 +175,13 @@ const indicators = [
     essence: "План, уточнение договоренности, звонок, маленькая закрытая задача.",
     target: "Перевести тревогу в один конкретный следующий шаг.",
     avoid: "Крутить сценарии в голове без внешнего действия.",
-    risk: "Тревога растет, если не получает формы."
+    risk: "Тревога растет, если не получает формы.",
+    sourceIds: ["astroEighth", "skyEighth", "astroMars", "astroSaturn"],
+    recommendations: [
+      "8 дом связан с тревогой, потерей и глубинной уязвимостью: не игнорируй страх, но не отдавай ему управление.",
+      "Марс дает выход через действие: выбери один шаг, который можно сделать сейчас.",
+      "Сатурн стабилизирует тревогу через порядок: план, срок, граница, минимальный следующий шаг."
+    ]
   },
   {
     id: "directCommunication",
@@ -73,7 +190,13 @@ const indicators = [
     essence: "Не молчаливое наказание, а ясная формулировка потребности и шага.",
     target: "Сказать: мне важно вот это, я предлагаю такой шаг.",
     avoid: "Молчать, исчезать, наказывать дистанцией.",
-    risk: "Контакт становится полем обиды, а не решения."
+    risk: "Контакт становится полем обиды, а не решения.",
+    sourceIds: ["astroMars", "astroSaturn", "astroAspect"],
+    recommendations: [
+      "Марс отвечает за самоутверждение: говори прямо, но не разрушительно.",
+      "Сатурн держит форму контакта: коротко назови границу, срок или условие.",
+      "Напряженный аспект лучше проживать как задачу развития: не исчезать, а формулировать следующий шаг."
+    ]
   },
   {
     id: "moneyFacts",
@@ -82,7 +205,13 @@ const indicators = [
     essence: "Опыт, результат, рынок и ценность вместо автоматического снижения цены.",
     target: "Перед уступкой проверить факты и ценность работы.",
     avoid: "Снижать цену из страха или желания быть удобной.",
-    risk: "Ценность уходит первой, а усталость приходит следом."
+    risk: "Ценность уходит первой, а усталость приходит следом.",
+    sourceIds: ["astroTenth", "skyTenth", "astroSaturn", "astroEighth"],
+    recommendations: [
+      "Цена должна опираться на 10 дом: профессиональную роль, результат, репутацию и ответственность.",
+      "Сатурн просит границы обмена: объем, срок, стоимость, условия.",
+      "Если страх денег активирует 8 дом, сначала отдели реальный риск от эмоционального сценария."
+    ]
   },
   {
     id: "responsibilityBoundary",
@@ -91,7 +220,13 @@ const indicators = [
     essence: "Не спасать партнера или клиента, а отделять свое от чужого.",
     target: "Спросить: это моя ответственность или я беру чужую?",
     avoid: "Спасать, тащить, додумывать и компенсировать за другого.",
-    risk: "Энергия уходит в чужой контур."
+    risk: "Энергия уходит в чужой контур.",
+    sourceIds: ["astroPisces", "astroNeptune", "astroSaturn", "astroEighth"],
+    recommendations: [
+      "Рыбы и Нептун дают сострадание, но требуют проверки границ, чтобы помощь не стала растворением.",
+      "Сатурн отделяет свое от чужого: что я реально беру, а что остается у другого человека.",
+      "8 дом показывает темы слияния и чужих ресурсов: не компенсируй за другого его часть ответственности."
+    ]
   }
 ];
 
@@ -115,7 +250,9 @@ const focusDeck = [
     risks: [
       "Видимость не случится, если действие останется внутри.",
       "Туманная формулировка может обесценить точный смысл."
-    ]
+    ],
+    sourceIds: ["astroSun", "astroPisces", "astroTenth", "astroNeptune", "astroSaturn"],
+    recommendationIds: ["visibleExpertise", "methodPackaging", "professionalResponsibility"]
   },
   {
     title: "Статус через доказательство",
@@ -136,7 +273,9 @@ const focusDeck = [
     risks: [
       "Без фиксации результата статус снова становится невидимым.",
       "Тревога может подменить реальную оценку работы."
-    ]
+    ],
+    sourceIds: ["astroTenth", "skyTenth", "astroSaturn", "astroEighth"],
+    recommendationIds: ["statusProof", "moneyFacts"]
   },
   {
     title: "Граница как форма заботы",
@@ -157,7 +296,9 @@ const focusDeck = [
     risks: [
       "Энергия уйдет в чужой контур.",
       "Польза обернется усталостью, если граница не названа."
-    ]
+    ],
+    sourceIds: ["astroPisces", "astroNeptune", "astroSaturn", "astroEighth"],
+    recommendationIds: ["responsibilityBoundary", "directCommunication"]
   },
   {
     title: "Интуиция становится методикой",
@@ -178,7 +319,9 @@ const focusDeck = [
     risks: [
       "Смысл не станет продуктом без структуры.",
       "Тревога может съесть энергию упаковки."
-    ]
+    ],
+    sourceIds: ["astroPisces", "astroNeptune", "astroSaturn"],
+    recommendationIds: ["methodPackaging", "anxietyToAction"]
   },
   {
     title: "Прямое слово вместо исчезновения",
@@ -199,7 +342,9 @@ const focusDeck = [
     risks: [
       "Обида начнет управлять контактом.",
       "Неназванная потребность превратится в дистанцию."
-    ]
+    ],
+    sourceIds: ["astroMoon", "astroCancer", "astroMars", "astroSaturn", "astroAspect"],
+    recommendationIds: ["directCommunication", "emotionalPause"]
   }
 ];
 
@@ -301,6 +446,7 @@ function applyFocus(index, entry = getTodayEntry()) {
   if (!$("morningSzd").value.trim()) $("morningSzd").value = item.szd;
   if (!$("morningVda").value.trim()) $("morningVda").value = item.vda;
   renderDailyLists(item, entry);
+  renderOnlineRecommendations(item);
 }
 
 function normalizeFocusIndex(index) {
@@ -339,6 +485,10 @@ function renderIndicators(entry = {}) {
   $("indicatorGrid").innerHTML = indicators.map((indicator) => {
     const score = Number(scores[indicator.id] || 0);
     const groupClass = indicator.group === "СЗД" ? "sun" : "moon";
+    const sourceLinks = indicator.sourceIds.map((sourceId) => sourceLink(sourceId)).join("");
+    const recItems = indicator.recommendations
+      .map((item) => `<li>${escapeHtml(item)}</li>`)
+      .join("");
 
     return `
       <article class="indicator-card ${groupClass}">
@@ -361,6 +511,11 @@ function renderIndicators(entry = {}) {
             <dd>${escapeHtml(indicator.risk)}</dd>
           </div>
         </dl>
+        <div class="evidence-block">
+          <strong>Рекомендации из источников</strong>
+          <ul>${recItems}</ul>
+          <div class="source-links">${sourceLinks}</div>
+        </div>
         <div class="score-control" aria-label="Уровень проявления">
           <button class="score-button ${score === 0 ? "selected" : ""}" type="button" data-indicator-id="${indicator.id}" data-score="0">0</button>
           <button class="score-button ${score === 1 ? "selected" : ""}" type="button" data-indicator-id="${indicator.id}" data-score="1">1</button>
@@ -379,6 +534,50 @@ function renderIndicators(entry = {}) {
   });
 
   updateMeter(entry);
+  renderSourceDock();
+}
+
+function renderOnlineRecommendations(item = focusDeck[currentFocusIndex]) {
+  const sourceIds = [...new Set(item.sourceIds || [])];
+  const relatedIndicators = (item.recommendationIds || [])
+    .map((id) => indicators.find((indicator) => indicator.id === id))
+    .filter(Boolean);
+
+  $("onlineRecommendationList").innerHTML = `
+    <div class="evidence-meta">
+      <span>астро-источники проверены: ${sourcesVerified}</span>
+      <span>${sourceIds.length} источника</span>
+    </div>
+    ${relatedIndicators.map((indicator) => {
+      const sourceList = indicator.sourceIds.map((sourceId) => sourceLink(sourceId)).join("");
+      const recs = indicator.recommendations.slice(0, 2).map((rec) => `<li>${escapeHtml(rec)}</li>`).join("");
+      return `
+        <article class="recommendation-card">
+          <header>
+            <span>${indicator.group}</span>
+            <strong>${escapeHtml(indicator.title)}</strong>
+          </header>
+          <ul>${recs}</ul>
+          <div class="source-links">${sourceList}</div>
+        </article>
+      `;
+    }).join("")}
+  `;
+}
+
+function renderSourceDock() {
+  $("sourceDock").innerHTML = `
+    <span>авторитетные астрологические источники, проверены: ${sourcesVerified}</span>
+    <div>
+      ${Object.keys(sources).map((sourceId) => sourceLink(sourceId)).join("")}
+    </div>
+  `;
+}
+
+function sourceLink(sourceId) {
+  const source = sources[sourceId];
+  if (!source) return "";
+  return `<a href="${source.url}" target="_blank" rel="noreferrer">${escapeHtml(source.title)}</a>`;
 }
 
 function scoreLabel(score) {

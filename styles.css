@@ -526,6 +526,108 @@ h1 {
   margin-bottom: 0;
 }
 
+.evidence-section {
+  background:
+    linear-gradient(135deg, rgba(101, 169, 173, 0.11), rgba(242, 162, 58, 0.04)),
+    rgba(17, 16, 15, 0.22);
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.evidence-meta,
+.source-dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.source-dock {
+  align-items: flex-start;
+  margin-bottom: 4px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(246, 234, 210, 0.045);
+}
+
+.source-dock div,
+.source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.recommendation-card,
+.evidence-block {
+  border: 1px solid rgba(101, 169, 173, 0.24);
+  border-radius: var(--radius);
+  background: rgba(101, 169, 173, 0.055);
+}
+
+.recommendation-card {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+}
+
+.recommendation-card header {
+  display: grid;
+  gap: 4px;
+}
+
+.recommendation-card header span {
+  color: var(--water);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.recommendation-card strong,
+.evidence-block strong {
+  color: var(--paper);
+  line-height: 1.25;
+}
+
+.recommendation-card ul,
+.evidence-block ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--paper-dim);
+  font-size: 0.88rem;
+  line-height: 1.42;
+}
+
+.source-links a,
+.source-dock a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  max-width: 100%;
+  padding: 0 9px;
+  border: 1px solid rgba(246, 234, 210, 0.16);
+  border-radius: 999px;
+  background: rgba(246, 234, 210, 0.06);
+  color: var(--paper-dim);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.source-links a:hover,
+.source-dock a:hover {
+  border-color: rgba(242, 162, 58, 0.55);
+  color: var(--paper);
+}
+
 .daily-lists {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -659,7 +761,7 @@ h1 {
 .indicator-card dl {
   display: grid;
   gap: 9px;
-  margin: 0 0 13px;
+  margin: 0 0 12px;
 }
 
 .indicator-card dl div {
@@ -679,6 +781,17 @@ h1 {
   color: var(--paper-dim);
   font-size: 0.84rem;
   line-height: 1.38;
+}
+
+.evidence-block {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 13px;
+  padding: 12px;
+}
+
+.evidence-block strong {
+  font-size: 0.88rem;
 }
 
 .score-control {
@@ -975,6 +1088,11 @@ button:focus-visible {
   .daily-lists,
   .indicator-grid {
     grid-template-columns: 1fr;
+  }
+
+  .evidence-meta,
+  .source-dock {
+    display: grid;
   }
 }
 
