@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>СЗД / ВДА | ежедневная сверка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Forum&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true">
+      <span class="solar-thread"></span>
+      <span class="chart-ring"></span>
+      <span class="grain"></span>
+    </div>
+
+    <main class="app-shell">
+      <section class="topbar" aria-label="Панель дня">
+        <div class="identity">
+          <div class="mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <circle cx="32" cy="32" r="25"></circle>
+              <circle cx="32" cy="32" r="10"></circle>
+              <path d="M32 7v50M7 32h50M14.4 14.4l35.2 35.2M49.6 14.4 14.4 49.6"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="eyebrow">личный портал</p>
+            <h1>СЗД / ВДА</h1>
+            <p class="subtitle">показатели, проявления, целевые действия и риски дня</p>
+          </div>
+        </div>
+        <div class="date-card">
+          <span id="weekday">сегодня</span>
+          <strong id="dateLabel">13 мая</strong>
+        </div>
+      </section>
+
+      <section class="dashboard" aria-label="Рабочая область">
+        <aside class="guidance-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">настрой дня</p>
+              <span class="panel-kicker">ось проявления</span>
+            </div>
+            <button class="icon-button" id="refreshFocus" type="button" aria-label="Обновить фокус">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"></path>
+                <path d="M3 21v-5h5"></path>
+                <path d="M3 12A9 9 0 0 1 18.4 5.6L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+              </svg>
+            </button>
+          </div>
+          <h2 id="focusTitle">Экспертность в ясной форме</h2>
+          <p id="focusText">Сегодня важен один видимый шаг: не просто почувствовать, а оформить интуицию в понятный вывод, структуру или рекомендацию.</p>
+
+          <div class="axis-map" aria-label="Ось СЗД и ВДА">
+            <span>внутри</span>
+            <i></i>
+            <span>вовне</span>
+          </div>
+
+          <div class="signal-grid">
+            <article class="signal-card sun">
+              <span class="signal-label">СЗД</span>
+              <strong>солнцезажигающее действие</strong>
+              <p id="szdSuggestion">Опубликовать короткий экспертный разбор: наблюдение, вывод, рекомендация.</p>
+            </article>
+            <article class="signal-card moon">
+              <span class="signal-label">ВДА</span>
+              <strong>внутреннее действие адаптации</strong>
+              <p id="vdaSuggestion">Перед эмоциональной реакцией спросить: я защищаюсь или решаю задачу?</p>
+            </article>
+          </div>
+
+          <div class="risk-box">
+            <span>старый сценарий</span>
+            <p id="riskSuggestion">Спрятаться в подготовку и отложить проявление.</p>
+          </div>
+
+          <div class="today-meter" aria-label="Прогресс проявлений за день">
+            <span>проявлено сегодня</span>
+            <strong id="meterValue">0 / 10</strong>
+            <i><b id="meterFill"></b></i>
+          </div>
+        </aside>
+
+        <section class="work-panel">
+          <div class="tabs" role="tablist" aria-label="Режим сверки">
+            <button class="tab active" type="button" data-tab="morning" role="tab" aria-selected="true">
+              <span>01</span> Сегодня
+            </button>
+            <button class="tab" type="button" data-tab="map" role="tab" aria-selected="false">
+              <span>02</span> Карта
+            </button>
+            <button class="tab" type="button" data-tab="evening" role="tab" aria-selected="false">
+              <span>03</span> Вечер
+            </button>
+            <button class="tab" type="button" data-tab="history" role="tab" aria-selected="false">
+              <span>04</span> Архив
+            </button>
+          </div>
+
+          <form class="entry-form active" id="morningPanel" data-panel="morning">
+            <section class="portal-section">
+              <div class="section-heading">
+                <p class="eyebrow">план дня</p>
+                <h3>Целевые действия, стоп-лист и риски</h3>
+              </div>
+              <div class="daily-lists">
+                <article class="daily-column target">
+                  <span>делать сегодня</span>
+                  <div class="action-list" id="targetActionList"></div>
+                </article>
+                <article class="daily-column avoid">
+                  <span>избегать сегодня</span>
+                  <div class="action-list" id="avoidActionList"></div>
+                </article>
+                <article class="daily-column risk">
+                  <span>риски дня</span>
+                  <div class="action-list" id="riskActionList"></div>
+                </article>
+              </div>
+            </section>
+
+            <label>
+              <span>Ось дня</span>
+              <small>какая линия сегодня собирает внимание и энергию</small>
+              <textarea id="morningFocus" rows="3"></textarea>
+            </label>
+            <label>
+              <span>Солнцезажигающее действие</span>
+              <small>один видимый шаг для экспертности, статуса или пользы людям</small>
+              <textarea id="morningSzd" rows="3"></textarea>
+            </label>
+            <label>
+              <span>Внутреннее действие адаптации</span>
+              <small>один способ удержать границы, ясность или эмоциональную опору</small>
+              <textarea id="morningVda" rows="3"></textarea>
+            </label>
+            <label>
+              <span>Обязательство дня</span>
+              <small>короткая фраза, за которую легко отвечать делом</small>
+              <input id="morningCommitment" type="text">
+            </label>
+          </form>
+
+          <section class="portal-panel" id="mapPanel" data-panel="map" aria-label="Карта показателей">
+            <div class="section-heading">
+              <p class="eyebrow">карта разбора</p>
+              <h3>Показатели и проявления</h3>
+            </div>
+            <div class="map-intro">
+              <p>Отмечай не идеальность, а факт проявления: 0 не было, 1 намечено, 2 проявлено. Ноль не провал, это данные для настройки.</p>
+            </div>
+            <div class="indicator-grid" id="indicatorGrid"></div>
+          </section>
+
+          <form class="entry-form" id="eveningPanel" data-panel="evening">
+            <section class="portal-section">
+              <div class="section-heading">
+                <p class="eyebrow">вечерняя сверка</p>
+                <h3>Что сегодня проявилось</h3>
+              </div>
+              <div class="manifestation-list" id="manifestationList"></div>
+            </section>
+
+            <label>
+              <span>Факты дня</span>
+              <small>что реально было сделано, без самокритики и обесценивания</small>
+              <textarea id="eveningDone" rows="3"></textarea>
+            </label>
+            <label>
+              <span>Момент своей линии</span>
+              <small>момент, где было ощущение внутреннего совпадения</small>
+              <textarea id="eveningAligned" rows="3"></textarea>
+            </label>
+            <label>
+              <span>Где энергия ушла</span>
+              <small>обида, спасательство, тревога, молчание, обесценивание</small>
+              <textarea id="eveningLeak" rows="3"></textarea>
+            </label>
+            <label>
+              <span>Настройка на завтра</span>
+              <small>что повторить, упростить или усилить</small>
+              <input id="eveningTomorrow" type="text">
+            </label>
+          </form>
+
+          <section class="history-panel" id="historyPanel" data-panel="history" aria-label="Архив записей">
+            <div class="history-list" id="historyList"></div>
+          </section>
+
+          <div class="actions">
+            <button class="primary-button" id="saveEntry" type="button">Сохранить день</button>
+            <button class="secondary-button" id="clearToday" type="button">Очистить сегодня</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
