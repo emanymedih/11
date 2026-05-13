@@ -2,6 +2,7 @@ const STORAGE_KEY = "szd-vda-daily-v1";
 
 let currentFocusIndex = 0;
 let currentMapFilter = "all";
+let currentFactorFilter = "all";
 
 const sourcesVerified = "13 мая 2026";
 
@@ -56,10 +57,20 @@ const sources = {
     url: "https://www.astro.com/astrowiki/en/Mars",
     theme: "инициатива, действие, самоутверждение"
   },
+  skyMars: {
+    title: "Skyscript: Mars",
+    url: "https://www.skyscript.co.uk/mars.html",
+    theme: "воля к действию, напор, конфликт, смелость"
+  },
   astroSaturn: {
     title: "Astrodienst: Saturn",
     url: "https://www.astro.com/astrowiki/en/Saturn",
     theme: "границы, ответственность, зрелость, дисциплина"
+  },
+  skySaturn: {
+    title: "Skyscript: Saturn",
+    url: "https://www.skyscript.co.uk/saturn.html",
+    theme: "ограничения, структура, выдержка, долг"
   },
   astroAspect: {
     title: "Astrodienst: Aspects",
@@ -71,12 +82,207 @@ const sources = {
     url: "https://www.astro.com/astrowiki/en/Uranus",
     theme: "освобождение, внезапность, разрыв с привычным"
   },
+  skyUranus: {
+    title: "Skyscript: Uranus",
+    url: "https://www.skyscript.co.uk/uranus.html",
+    theme: "перемены, независимость, внезапное нарушение шаблона"
+  },
   astroNeptune: {
     title: "Astrodienst: Neptune",
     url: "https://www.astro.com/astrowiki/en/Neptune",
     theme: "интуиция, вдохновение, растворение, риск иллюзии"
+  },
+  skyNeptune: {
+    title: "Skyscript: Neptune",
+    url: "https://www.skyscript.co.uk/neptune.html",
+    theme: "воображение, идеализация, тонкое восприятие, неясность"
   }
 };
+
+const natalFactors = [
+  {
+    id: "sun",
+    type: "planet",
+    title: "Солнце",
+    placement: "Рыбы, 10 дом",
+    meaning: "Воля, жизненная сила, право быть видимой и собирать личный вектор вокруг смысла.",
+    advice: "Выбирать действия, где твоя интуиция, помощь и профессиональная позиция становятся видимыми для других.",
+    target: "Сказать или показать от своего имени: разбор, вывод, позицию, услугу, кейс.",
+    avoid: "Считать, что сначала надо стать идеальной, а уже потом проявляться.",
+    risk: "Внутренний свет остается в частном поле, а статус не закрепляется.",
+    practice: "Один публичный экспертный жест в день: пост, голосовое, консультационный вывод, мини-разбор.",
+    sourceIds: ["astroSun", "astroPisces", "astroTenth", "skyTenth"]
+  },
+  {
+    id: "moon",
+    type: "planet",
+    title: "Луна",
+    placement: "Рак, 8 дом",
+    meaning: "Эмоциональная потребность в безопасности, тонкая реакция на близость, риск, доверие и уязвимость.",
+    advice: "Сначала признавать чувство, затем отделять его от факта и от реальной задачи.",
+    target: "Перед ответом назвать себе: что я чувствую, что произошло, какой следующий шаг взрослый.",
+    avoid: "Реагировать из обиды, проверять людей молчанием или защищаться до прояснения фактов.",
+    risk: "Чувствительность становится управлением через тревогу, а не навигацией.",
+    practice: "Пауза 90 секунд перед сложным сообщением, затем одна короткая фраза потребности.",
+    sourceIds: ["astroMoon", "astroCancer", "skyCancer", "astroEighth", "skyEighth"]
+  },
+  {
+    id: "mars",
+    type: "planet",
+    title: "Марс",
+    placement: "в связке с Сатурном",
+    meaning: "Действие, инициатива, защита границ и способность переводить напряжение в поступок.",
+    advice: "Делать маленький конкретный шаг до того, как тревога начнет разрастаться в сценарии.",
+    target: "Уточнить, написать, назначить срок, закрыть одну задачу, сказать прямо.",
+    avoid: "Копить напряжение, затем обрывать контакт или резко доказывать свою правоту.",
+    risk: "Энергия действия застревает между импульсом и внутренним запретом.",
+    practice: "Формула Марса: один глагол, один адресат, один срок.",
+    sourceIds: ["astroMars", "skyMars", "astroSaturn", "skySaturn"]
+  },
+  {
+    id: "saturn",
+    type: "planet",
+    title: "Сатурн",
+    placement: "границы, ответственность, статус",
+    meaning: "Зрелость, форма, дисциплина, способность держать обещание, цену, срок и профессиональную роль.",
+    advice: "Давать интуиции структуру: правила, этапы, условия, повторяемую методику.",
+    target: "Зафиксировать объем, цену, срок, формат или критерий результата.",
+    avoid: "Обещать слишком много, брать чужую часть ответственности, размывать договоренности.",
+    risk: "Без формы смысл утекает, а усталость маскируется под заботу.",
+    practice: "Перед каждым новым делом записать границу: что входит, что не входит, когда завершено.",
+    sourceIds: ["astroSaturn", "skySaturn", "astroTenth", "skyTenth"]
+  },
+  {
+    id: "uranus",
+    type: "planet",
+    title: "Уран",
+    placement: "напряжение к личной системе",
+    meaning: "Свобода, обновление, внезапные развороты и желание выйти из тесной схемы.",
+    advice: "Оставлять себе пространство выбора, но не превращать свободу в резкий разрыв.",
+    target: "Менять формат осознанно: предложить новый вариант, а не исчезнуть без объяснения.",
+    avoid: "Срывать договоренность из-за ощущения внутренней тесноты.",
+    risk: "Рывок к свободе может разрушать то, что можно было перестроить мягче.",
+    practice: "Если хочется все отменить, сначала предложить один обновленный формат или новый срок.",
+    sourceIds: ["astroUranus", "skyUranus", "astroAspect"]
+  },
+  {
+    id: "neptune",
+    type: "planet",
+    title: "Нептун",
+    placement: "Рыбы, интуиция, туман",
+    meaning: "Тонкое восприятие, вдохновение, сострадание, способность видеть невидимый смысл.",
+    advice: "Доверять интуиции, но переводить ее в проверяемые формулировки, факты и действия.",
+    target: "Оформить ощущение в вывод: что я вижу, почему это важно, что делать дальше.",
+    avoid: "Идеализировать, спасать, обещать из сочувствия или оставлять смысл без формы.",
+    risk: "Ценность растворяется в тумане, если не названы границы и следующий шаг.",
+    practice: "Каждую интуитивную мысль завершать строкой: практическая рекомендация.",
+    sourceIds: ["astroNeptune", "skyNeptune", "astroPisces", "astroSaturn"]
+  },
+  {
+    id: "pisces",
+    type: "sign",
+    title: "Рыбы",
+    placement: "знак Солнца",
+    meaning: "Смысл, помощь, эмпатия, творчество, духовная и психологическая чувствительность.",
+    advice: "Строить профессиональность вокруг тонкого понимания людей, но не растворяться в их запросах.",
+    target: "Выбрать дело, где есть смысл, польза, обучение, творчество или помогающая функция.",
+    avoid: "Делать только механическое или становиться удобной за счет своей энергии.",
+    risk: "Сострадание без границ превращается в спасательство.",
+    practice: "Проверка перед согласием: это мой вклад или я компенсирую чужую часть?",
+    sourceIds: ["astroPisces", "astroNeptune", "skySaturn"]
+  },
+  {
+    id: "cancer",
+    type: "sign",
+    title: "Рак",
+    placement: "знак Луны",
+    meaning: "Память, забота, восприимчивость, привязанность, потребность в эмоциональной защищенности.",
+    advice: "Не спорить со своей чувствительностью, а давать ей контейнер: слова, границы, факты.",
+    target: "Назвать потребность прямо и мягко, не пряча ее в обиду.",
+    avoid: "Ждать, что другой сам догадается, и наказывать дистанцией.",
+    risk: "Защитная реакция может подменить реальный контакт.",
+    practice: "Фраза дня: мне важно вот это, я предлагаю такой шаг.",
+    sourceIds: ["astroCancer", "skyCancer", "astroMoon"]
+  },
+  {
+    id: "tenthHouse",
+    type: "house",
+    title: "10 дом",
+    placement: "профессия, статус, общественная роль",
+    meaning: "Поле видимости, достижений, репутации, ответственности и признания результатов.",
+    advice: "Собирать не только внутреннюю уверенность, но и внешние доказательства профессиональной ценности.",
+    target: "Опубликовать кейс, обновить портфолио, назвать роль, показать результат или попросить отзыв.",
+    avoid: "Оставлять достижения в личных заметках и считать статус чем-то нескромным.",
+    risk: "Работы много, но социальное подтверждение не накапливается.",
+    practice: "Каждую неделю добавлять один артефакт статуса: кейс, отзыв, результат, публикацию.",
+    sourceIds: ["astroTenth", "skyTenth", "astroSun", "astroSaturn"]
+  },
+  {
+    id: "eighthHouse",
+    type: "house",
+    title: "8 дом",
+    placement: "глубина, страхи, чужие ресурсы, трансформация",
+    meaning: "Темы уязвимости, доверия, денег, кризисов, слияния и внутренней перестройки.",
+    advice: "Работать с тревогой через факты, границы и минимальное действие, а не через контроль всего.",
+    target: "Проверить реальный риск, отделить свое от чужого, сделать один шаг вместо прокручивания сценариев.",
+    avoid: "Снижать цену из страха, спасать другого или отдавать управление тревоге.",
+    risk: "Сильная глубина превращается в внутреннее давление, если нет выхода в действие.",
+    practice: "Таблица из трех строк: факт, страх, следующий шаг.",
+    sourceIds: ["astroEighth", "skyEighth", "astroMoon", "astroSaturn"]
+  },
+  {
+    id: "marsSaturn",
+    type: "aspect",
+    title: "Марс и Сатурн",
+    placement: "связка действия и дисциплины",
+    meaning: "Напряжение между импульсом и контролем, которое можно превратить в устойчивую силу.",
+    advice: "Не ждать вдохновения для действия, а задавать маленькую рамку и выполнять ее.",
+    target: "Сделать один ограниченный по времени шаг: 20 минут, один документ, одно сообщение.",
+    avoid: "То давить на себя, то полностью останавливаться.",
+    risk: "Сила уходит в внутреннее сопротивление вместо внешнего результата.",
+    practice: "Таймер на 20 минут и ясный критерий готовности.",
+    sourceIds: ["astroMars", "skyMars", "astroSaturn", "skySaturn", "astroAspect"]
+  },
+  {
+    id: "uranusNeptuneTension",
+    type: "aspect",
+    title: "Напряжения к Урану и Нептуну",
+    placement: "внезапность, туман, идеализация",
+    meaning: "Риск качелей между резкой свободой и растворением в неопределенности.",
+    advice: "Каждую сильную эмоцию или вдохновение проверять реальностью: фактами, сроками, границами.",
+    target: "Не исчезать и не обещать в тумане, а назвать новый формат, факт или ближайший шаг.",
+    avoid: "Резко менять курс, идеализировать людей, делать выводы без проверки.",
+    risk: "Можно потерять ясность именно там, где нужна взрослая навигация.",
+    practice: "Три вопроса: что известно, что я додумываю, какой шаг проверит реальность?",
+    sourceIds: ["astroUranus", "skyUranus", "astroNeptune", "skyNeptune", "astroAspect"]
+  },
+  {
+    id: "sunPiscesTenth",
+    type: "synthesis",
+    title: "Солнце в Рыбах в 10 доме",
+    placement: "главная профессиональная связка",
+    meaning: "Твой ресурс раскрывается, когда тонкое видение становится публичной пользой и профессиональной ролью.",
+    advice: "Строить экспертность как авторский метод помощи: интуиция плюс структура плюс видимый результат.",
+    target: "Упаковать одно наблюдение в понятный продукт: разбор, консультацию, рубрику, методику.",
+    avoid: "Оставаться только в эмпатии без статуса, цены, формы и авторства.",
+    risk: "Чем сильнее внутренний смысл, тем больнее его невидимость.",
+    practice: "Каждый день: один смысловой вывод и одна внешняя форма для него.",
+    sourceIds: ["astroSun", "astroPisces", "astroTenth", "skyTenth", "astroNeptune", "astroSaturn"]
+  },
+  {
+    id: "moonCancerEighth",
+    type: "synthesis",
+    title: "Луна в Раке и 8 дом",
+    placement: "эмоциональная глубина и безопасность",
+    meaning: "Чувствительность тонко считывает риск, но ей нужна взрослая опора, чтобы не управлять через страх.",
+    advice: "Создавать безопасность через ясность: что я чувствую, что реально происходит, где моя граница.",
+    target: "В сложной теме денег, близости или доверия сначала проверить факты, потом действовать.",
+    avoid: "Сливаться, спасать, подозревать, молчать или снижать ценность работы из тревоги.",
+    risk: "Эмоциональная глубина может стать закрытой системой, если не выводить ее в слова.",
+    practice: "Одна честная фраза вместо внутреннего сценария.",
+    sourceIds: ["astroMoon", "astroCancer", "skyCancer", "astroEighth", "skyEighth", "astroSaturn"]
+  }
+];
 
 const indicators = [
   {
@@ -562,10 +768,79 @@ function renderIndicators(entry = {}) {
   renderSourceDock();
 }
 
+function renderNatalFactors() {
+  syncFactorButtons();
+
+  const filteredFactors = natalFactors.filter((factor) => {
+    if (currentFactorFilter === "all") return true;
+    return factor.type === currentFactorFilter;
+  });
+
+  if (!filteredFactors.length) {
+    $("factorGrid").innerHTML = '<div class="map-empty">В этом фильтре пока нет показателей.</div>';
+    return;
+  }
+
+  $("factorGrid").innerHTML = filteredFactors.map((factor) => {
+    const sourceLinks = factor.sourceIds.map((sourceId) => sourceLink(sourceId)).join("");
+
+    return `
+      <article class="factor-card ${factor.type}">
+        <header>
+          <span>${factorTypeLabel(factor.type)}</span>
+          <h4>${escapeHtml(factor.title)}</h4>
+          <p>${escapeHtml(factor.placement)}</p>
+        </header>
+        <p class="factor-meaning">${escapeHtml(factor.meaning)}</p>
+        <dl>
+          <div>
+            <dt>Совет</dt>
+            <dd>${escapeHtml(factor.advice)}</dd>
+          </div>
+          <div>
+            <dt>Целевое действие</dt>
+            <dd>${escapeHtml(factor.target)}</dd>
+          </div>
+          <div>
+            <dt>Избегать</dt>
+            <dd>${escapeHtml(factor.avoid)}</dd>
+          </div>
+          <div>
+            <dt>Риск</dt>
+            <dd>${escapeHtml(factor.risk)}</dd>
+          </div>
+        </dl>
+        <div class="practice-line">
+          <span>практика</span>
+          <p>${escapeHtml(factor.practice)}</p>
+        </div>
+        <div class="source-links">${sourceLinks}</div>
+      </article>
+    `;
+  }).join("");
+}
+
 function syncFilterButtons() {
   document.querySelectorAll(".filter-button").forEach((button) => {
     button.classList.toggle("active", button.dataset.filter === currentMapFilter);
   });
+}
+
+function syncFactorButtons() {
+  document.querySelectorAll(".factor-button").forEach((button) => {
+    button.classList.toggle("active", button.dataset.factorFilter === currentFactorFilter);
+  });
+}
+
+function factorTypeLabel(type) {
+  const labels = {
+    planet: "планета",
+    sign: "знак",
+    house: "дом",
+    aspect: "аспект",
+    synthesis: "связка"
+  };
+  return labels[type] || "показатель";
 }
 
 function renderOnlineRecommendations(item = focusDeck[currentFocusIndex]) {
@@ -630,10 +905,14 @@ function setIndicatorScore(indicatorId, score) {
 }
 
 function collectIndicatorScores() {
-  const scores = {};
+  const scores = { ...(getTodayEntry().indicatorScores || {}) };
   indicators.forEach((indicator) => {
     const selected = document.querySelector(`.score-button.selected[data-indicator-id="${indicator.id}"]`);
-    scores[indicator.id] = selected ? Number(selected.dataset.score) : 0;
+    if (selected) {
+      scores[indicator.id] = Number(selected.dataset.score);
+    } else if (!(indicator.id in scores)) {
+      scores[indicator.id] = 0;
+    }
   });
   return scores;
 }
@@ -806,6 +1085,7 @@ function boot() {
   formatToday();
   fillEntry(entry);
   applyFocus(entry.focusIndex ?? new Date().getDate(), entry);
+  renderNatalFactors();
   renderIndicators(entry);
   renderManifestations(entry);
   updateBrief(entry);
@@ -820,6 +1100,13 @@ function boot() {
     button.addEventListener("click", () => {
       currentMapFilter = button.dataset.filter;
       renderIndicators(collectEntry());
+    });
+  });
+
+  document.querySelectorAll(".factor-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentFactorFilter = button.dataset.factorFilter;
+      renderNatalFactors();
     });
   });
 

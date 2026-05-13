@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>СЗД / ВДА | ежедневная сверка</title>
+    <title>Натальный портал | ежедневная сверка</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Forum&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,8 +28,8 @@
           </div>
           <div>
             <p class="eyebrow">личный портал</p>
-            <h1>СЗД / ВДА</h1>
-            <p class="subtitle">показатели, проявления, целевые действия и риски дня</p>
+            <h1>Натальный портал</h1>
+            <p class="subtitle">общая картина разбора, ежедневные проявления, целевые действия и риски</p>
           </div>
         </div>
         <div class="date-card">
@@ -98,7 +98,7 @@
               <span>01</span> Сегодня
             </button>
             <button class="tab" type="button" data-tab="map" role="tab" aria-selected="false">
-              <span>02</span> Карта
+              <span>02</span> Разбор
             </button>
             <button class="tab" type="button" data-tab="evening" role="tab" aria-selected="false">
               <span>03</span> Вечер
@@ -186,25 +186,63 @@
             </section>
           </form>
 
-          <section class="portal-panel" id="mapPanel" data-panel="map" aria-label="Карта показателей">
-            <div class="section-heading">
-              <p class="eyebrow">карта разбора</p>
-              <h3>Показатели и проявления</h3>
-            </div>
-            <div class="map-intro">
-              <p>Отмечай не идеальность, а факт проявления: 0 не было, 1 намечено, 2 проявлено. Источники здесь авторитетны внутри западной астрологической традиции.</p>
-            </div>
-            <div class="map-controls" role="group" aria-label="Фильтр показателей">
-              <button class="filter-button active" type="button" data-filter="all">Все</button>
-              <button class="filter-button" type="button" data-filter="szd">СЗД</button>
-              <button class="filter-button" type="button" data-filter="vda">ВДА</button>
-              <button class="filter-button" type="button" data-filter="active">Отмеченные</button>
-            </div>
-            <details class="source-dock-wrap">
-              <summary>Источники карты</summary>
-              <div class="source-dock" id="sourceDock"></div>
-            </details>
-            <div class="indicator-grid" id="indicatorGrid"></div>
+          <section class="portal-panel" id="mapPanel" data-panel="map" aria-label="Разбор показателей">
+            <section class="portal-section natal-section" aria-label="Натальная матрица разбора">
+              <div class="section-heading split-heading">
+                <div>
+                  <p class="eyebrow">общая картина</p>
+                  <h3>Натальная матрица разбора</h3>
+                </div>
+                <span class="verified-chip">источники проверены: 13 мая 2026</span>
+              </div>
+              <div class="natal-synthesis">
+                <article>
+                  <span>главная линия</span>
+                  <strong>интуиция должна получать профессиональную форму</strong>
+                  <p>Солнце в Рыбах в 10 доме связывает смысл, помощь и тонкое видение с публичной ролью, статусом и видимым результатом.</p>
+                </article>
+                <article>
+                  <span>эмоциональная опора</span>
+                  <strong>чувствительность работает лучше через границы</strong>
+                  <p>Луна в Раке и 8 дом дают глубину реакции; задача дня: отделять чувство, факт, чужую ответственность и следующий шаг.</p>
+                </article>
+                <article>
+                  <span>способ движения</span>
+                  <strong>не рывок, а выдержанная последовательность</strong>
+                  <p>Марс, Сатурн и напряжения к Урану/Нептуну требуют действия без исчезновения, хаоса, спасательства и тумана.</p>
+                </article>
+              </div>
+              <div class="factor-controls" role="group" aria-label="Фильтр натальной матрицы">
+                <button class="factor-button active" type="button" data-factor-filter="all">Все</button>
+                <button class="factor-button" type="button" data-factor-filter="planet">Планеты</button>
+                <button class="factor-button" type="button" data-factor-filter="sign">Знаки</button>
+                <button class="factor-button" type="button" data-factor-filter="house">Дома</button>
+                <button class="factor-button" type="button" data-factor-filter="aspect">Аспекты</button>
+                <button class="factor-button" type="button" data-factor-filter="synthesis">Связки</button>
+              </div>
+              <div class="factor-grid" id="factorGrid"></div>
+            </section>
+
+            <section class="portal-section tracker-section" aria-label="Трекер проявлений">
+              <div class="section-heading">
+                <p class="eyebrow">ежедневный трекер</p>
+                <h3>Показатели и проявления</h3>
+              </div>
+              <div class="map-intro">
+                <p>Отмечай не идеальность, а факт проявления: 0 не было, 1 намечено, 2 проявлено. Здесь СЗД и ВДА остаются практической частью всей натальной картины.</p>
+              </div>
+              <div class="map-controls" role="group" aria-label="Фильтр показателей">
+                <button class="filter-button active" type="button" data-filter="all">Все</button>
+                <button class="filter-button" type="button" data-filter="szd">СЗД</button>
+                <button class="filter-button" type="button" data-filter="vda">ВДА</button>
+                <button class="filter-button" type="button" data-filter="active">Отмеченные</button>
+              </div>
+              <details class="source-dock-wrap">
+                <summary>Источники карты</summary>
+                <div class="source-dock" id="sourceDock"></div>
+              </details>
+              <div class="indicator-grid" id="indicatorGrid"></div>
+            </section>
           </section>
 
           <form class="entry-form" id="eveningPanel" data-panel="evening">
