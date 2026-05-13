@@ -54,13 +54,17 @@
               </svg>
             </button>
           </div>
-          <h2 id="focusTitle">Экспертность в ясной форме</h2>
-          <p id="focusText">Сегодня важен один видимый шаг: не просто почувствовать, а оформить интуицию в понятный вывод, структуру или рекомендацию.</p>
 
-          <div class="axis-map" aria-label="Ось СЗД и ВДА">
-            <span>внутри</span>
-            <i></i>
-            <span>вовне</span>
+          <div class="focus-card">
+            <span class="focus-chip">тема дня</span>
+            <h2 id="focusTitle">Экспертность в ясной форме</h2>
+            <p id="focusText">Сегодня важен один видимый шаг: не просто почувствовать, а оформить интуицию в понятный вывод, структуру или рекомендацию.</p>
+
+            <div class="axis-map" aria-label="Ось СЗД и ВДА">
+              <span>внутри</span>
+              <i></i>
+              <span>вовне</span>
+            </div>
           </div>
 
           <div class="signal-grid">
@@ -105,9 +109,38 @@
           </div>
 
           <form class="entry-form active" id="morningPanel" data-panel="morning">
+            <section class="portal-section daily-setup">
+              <div class="section-heading">
+                <p class="eyebrow">личный вектор</p>
+                <h3>Сначала зафиксировать день</h3>
+              </div>
+              <div class="entry-grid">
+                <label>
+                  <span>Ось дня</span>
+                  <small>какая линия сегодня собирает внимание и энергию</small>
+                  <textarea id="morningFocus" rows="3"></textarea>
+                </label>
+                <label>
+                  <span>Солнцезажигающее действие</span>
+                  <small>один видимый шаг для экспертности, статуса или пользы людям</small>
+                  <textarea id="morningSzd" rows="3"></textarea>
+                </label>
+                <label>
+                  <span>Внутреннее действие адаптации</span>
+                  <small>один способ удержать границы, ясность или эмоциональную опору</small>
+                  <textarea id="morningVda" rows="3"></textarea>
+                </label>
+                <label>
+                  <span>Обязательство дня</span>
+                  <small>короткая фраза, за которую легко отвечать делом</small>
+                  <input id="morningCommitment" type="text">
+                </label>
+              </div>
+            </section>
+
             <section class="portal-section">
               <div class="section-heading">
-                <p class="eyebrow">план дня</p>
+                <p class="eyebrow">оперативный трекер</p>
                 <h3>Целевые действия, стоп-лист и риски</h3>
               </div>
               <div class="daily-lists">
@@ -133,27 +166,6 @@
               </div>
               <div class="recommendation-list" id="onlineRecommendationList"></div>
             </section>
-
-            <label>
-              <span>Ось дня</span>
-              <small>какая линия сегодня собирает внимание и энергию</small>
-              <textarea id="morningFocus" rows="3"></textarea>
-            </label>
-            <label>
-              <span>Солнцезажигающее действие</span>
-              <small>один видимый шаг для экспертности, статуса или пользы людям</small>
-              <textarea id="morningSzd" rows="3"></textarea>
-            </label>
-            <label>
-              <span>Внутреннее действие адаптации</span>
-              <small>один способ удержать границы, ясность или эмоциональную опору</small>
-              <textarea id="morningVda" rows="3"></textarea>
-            </label>
-            <label>
-              <span>Обязательство дня</span>
-              <small>короткая фраза, за которую легко отвечать делом</small>
-              <input id="morningCommitment" type="text">
-            </label>
           </form>
 
           <section class="portal-panel" id="mapPanel" data-panel="map" aria-label="Карта показателей">

@@ -242,7 +242,7 @@ h1 {
 
 .dashboard {
   display: grid;
-  grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.38fr);
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.5fr);
   gap: 18px;
   align-items: start;
 }
@@ -260,7 +260,9 @@ h1 {
   position: sticky;
   top: 18px;
   overflow: hidden;
-  padding: 24px;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
 }
 
 .guidance-panel::before {
@@ -312,20 +314,44 @@ h1 {
   stroke-width: 2;
 }
 
+.focus-card {
+  display: grid;
+  gap: 11px;
+  padding: 16px;
+  border: 1px solid rgba(242, 162, 58, 0.22);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(242, 162, 58, 0.12), rgba(101, 169, 173, 0.04)),
+    rgba(17, 16, 15, 0.28);
+}
+
+.focus-chip {
+  justify-self: start;
+  padding: 5px 9px;
+  border: 1px solid rgba(242, 162, 58, 0.26);
+  border-radius: 999px;
+  background: rgba(242, 162, 58, 0.08);
+  color: var(--sun);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .guidance-panel h2 {
-  max-width: 12ch;
-  margin: 30px 0 13px;
+  max-width: 100%;
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 4.05rem;
+  font-size: 2.9rem;
   font-weight: 400;
-  line-height: 0.92;
+  line-height: 0.98;
   letter-spacing: 0;
 }
 
-.guidance-panel > p {
+.focus-card p {
+  margin-bottom: 0;
   color: var(--paper-dim);
-  font-size: 1.02rem;
-  line-height: 1.62;
+  font-size: 0.95rem;
+  line-height: 1.52;
 }
 
 .axis-map {
@@ -333,7 +359,7 @@ h1 {
   grid-template-columns: auto 1fr auto;
   gap: 10px;
   align-items: center;
-  margin: 24px 0;
+  margin: 2px 0 0;
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 800;
@@ -370,7 +396,8 @@ h1 {
 
 .signal-grid {
   display: grid;
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .signal-card,
@@ -426,7 +453,6 @@ h1 {
 }
 
 .risk-box {
-  margin-top: 12px;
   border-color: rgba(195, 108, 114, 0.35);
   background: linear-gradient(135deg, rgba(195, 108, 114, 0.12), rgba(246, 234, 210, 0.035));
 }
@@ -501,6 +527,24 @@ h1 {
   background:
     linear-gradient(135deg, rgba(242, 162, 58, 0.08), rgba(101, 169, 173, 0.045)),
     rgba(17, 16, 15, 0.22);
+}
+
+.daily-setup {
+  background:
+    linear-gradient(135deg, rgba(242, 162, 58, 0.1), rgba(246, 234, 210, 0.02)),
+    rgba(17, 16, 15, 0.22);
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.entry-grid label:first-child,
+.entry-grid label:nth-child(2),
+.entry-grid label:nth-child(3) {
+  min-height: 178px;
 }
 
 .section-heading {
@@ -1086,8 +1130,15 @@ button:focus-visible {
   }
 
   .daily-lists,
-  .indicator-grid {
+  .indicator-grid,
+  .entry-grid {
     grid-template-columns: 1fr;
+  }
+
+  .entry-grid label:first-child,
+  .entry-grid label:nth-child(2),
+  .entry-grid label:nth-child(3) {
+    min-height: 0;
   }
 
   .evidence-meta,
@@ -1126,7 +1177,7 @@ button:focus-visible {
   }
 
   .guidance-panel h2 {
-    font-size: 2.65rem;
+    font-size: 2.35rem;
   }
 
   .guidance-panel,
