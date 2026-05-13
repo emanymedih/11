@@ -1,6 +1,7 @@
 const STORAGE_KEY = "szd-vda-daily-v1";
 
 let currentFocusIndex = 0;
+let currentMapFilter = "all";
 
 const sourcesVerified = "13 мая 2026";
 
@@ -417,7 +418,9 @@ function saveEntry() {
   };
   writeStore(store);
   updateMeter(store[todayKey()]);
+  updateBrief(store[todayKey()]);
   renderManifestations(store[todayKey()]);
+  renderAutoSummary(store[todayKey()]);
   renderHistory();
 }
 
@@ -430,6 +433,8 @@ function clearToday() {
   renderIndicators({});
   renderManifestations({});
   updateMeter({});
+  updateBrief({});
+  renderAutoSummary({});
   renderHistory();
 }
 
@@ -482,7 +487,24 @@ function renderActionList(kind, items, entry = {}) {
 
 function renderIndicators(entry = {}) {
   const scores = entry.indicatorScores || {};
-  $("indicatorGrid").innerHTML = indicators.map((indicator) => {
+  syncFilterButtons();
+
+  const filteredIndicators = indicators.filter((indicator) => {
+    const score = Number(scores[indicator.id] || 0);
+    if (currentMapFilter === "szd") return indicator.group === "СЗД";
+    if (currentMapFilter === "vda") return indicator.group === "ВДА";
+    if (currentMapFilter === "active") return score > 0;
+    return true;
+  });
+
+  if (!filteredIndicators.length) {
+    $("indicatorGrid").innerHTML = '<div class="map-empty">В этом фильтре пока ничего не отмечено.</div>';
+    updateMeter(entry);
+    renderSourceDock();
+    return;
+  }
+
+  $("indicatorGrid").innerHTML = filteredIndicators.map((indicator) => {
     const score = Number(scores[indicator.id] || 0);
     const groupClass = indicator.group === "СЗД" ? "sun" : "moon";
     const sourceLinks = indicator.sourceIds.map((sourceId) => sourceLink(sourceId)).join("");
@@ -530,11 +552,20 @@ function renderIndicators(entry = {}) {
     button.addEventListener("click", () => {
       setIndicatorScore(button.dataset.indicatorId, Number(button.dataset.score));
       saveEntry();
+      if (currentMapFilter === "active") renderIndicators(collectEntry());
     });
   });
 
   updateMeter(entry);
+  updateBrief(entry);
+  renderAutoSummary(entry);
   renderSourceDock();
+}
+
+function syncFilterButtons() {
+  document.querySelectorAll(".filter-button").forEach((button) => {
+    button.classList.toggle("active", button.dataset.filter === currentMapFilter);
+  });
 }
 
 function renderOnlineRecommendations(item = focusDeck[currentFocusIndex]) {
@@ -613,6 +644,77 @@ function collectActionChecks() {
     checks[input.dataset.actionId] = input.checked;
   });
   return checks;
+}
+
+function getStats(entry = collectEntry()) {
+  const scores = entry.indicatorScores || {};
+  const szdItems = indicators.filter((indicator) => indicator.group === "СЗД");
+  const vdaItems = indicators.filter((indicator) => indicator.group === "ВДА");
+  const szdCount = szdItems.filter((indicator) => Number(scores[indicator.id] || 0) > 0).length;
+  const vdaCount = vdaItems.filter((indicator) => Number(scores[indicator.id] || 0) > 0).length;
+  const active = indicators.filter((indicator) => Number(scores[indicator.id] || 0) > 0);
+  const strong = [...active].sort((a, b) => Number(scores[b.id] || 0) - Number(scores[a.id] || 0));
+  const quiet = indicators.filter((indicator) => Number(scores[indicator.id] || 0) === 0);
+  const actionInputs = Array.from(document.querySelectorAll(".action-toggle"));
+  const checkedActions = actionInputs.filter((input) => input.checked).length;
+
+  return {
+    szdCount,
+    szdTotal: szdItems.length,
+    vdaCount,
+    vdaTotal: vdaItems.length,
+    actionDone: checkedActions,
+    actionTotal: actionInputs.length,
+    strong,
+    quiet
+  };
+}
+
+function updateBrief(entry = collectEntry()) {
+  const stats = getStats(entry);
+  $("szdBrief").textContent = `${stats.szdCount} / ${stats.szdTotal}`;
+  $("vdaBrief").textContent = `${stats.vdaCount} / ${stats.vdaTotal}`;
+  $("actionBrief").textContent = `${stats.actionDone} / ${stats.actionTotal}`;
+
+  if (stats.actionTotal && stats.actionDone === stats.actionTotal) {
+    $("dayNudge").textContent = "день собран";
+  } else if (stats.strong.length) {
+    $("dayNudge").textContent = `держи линию: ${stats.strong[0].title.toLowerCase()}`;
+  } else {
+    $("dayNudge").textContent = "сначала выбери один шаг";
+  }
+}
+
+function renderAutoSummary(entry = collectEntry()) {
+  const stats = getStats(entry);
+  const strongest = stats.strong.slice(0, 2).map((indicator) => indicator.title).join(", ") || "пока не отмечено";
+  const attention = stats.quiet.slice(0, 2).map((indicator) => indicator.title).join(", ") || "все ключевые показатели затронуты";
+  const actionText = stats.actionTotal
+    ? `${stats.actionDone} из ${stats.actionTotal} пунктов отмечено`
+    : "чек-лист еще не собран";
+
+  $("autoSummary").innerHTML = `
+    <article class="summary-card">
+      <span>баланс</span>
+      <strong>СЗД ${stats.szdCount}/${stats.szdTotal} · ВДА ${stats.vdaCount}/${stats.vdaTotal}</strong>
+      <p>видно, где день ушел во внешнее проявление, а где держалась внутренняя опора</p>
+    </article>
+    <article class="summary-card">
+      <span>сильная линия</span>
+      <strong>${escapeHtml(strongest)}</strong>
+      <p>это стоит повторить или усилить завтра</p>
+    </article>
+    <article class="summary-card">
+      <span>зона внимания</span>
+      <strong>${escapeHtml(attention)}</strong>
+      <p>не как провал, а как следующий материал для настройки</p>
+    </article>
+    <article class="summary-card">
+      <span>действия</span>
+      <strong>${escapeHtml(actionText)}</strong>
+      <p>вечером лучше смотреть на факты, не на внутреннюю оценку</p>
+    </article>
+  `;
 }
 
 function updateMeter(entry = collectEntry()) {
@@ -706,10 +808,19 @@ function boot() {
   applyFocus(entry.focusIndex ?? new Date().getDate(), entry);
   renderIndicators(entry);
   renderManifestations(entry);
+  updateBrief(entry);
+  renderAutoSummary(entry);
   renderHistory();
 
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => setActiveTab(tab.dataset.tab));
+  });
+
+  document.querySelectorAll(".filter-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentMapFilter = button.dataset.filter;
+      renderIndicators(collectEntry());
+    });
   });
 
   $("refreshFocus").addEventListener("click", () => {

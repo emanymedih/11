@@ -108,6 +108,24 @@
             </button>
           </div>
 
+          <section class="day-brief" aria-label="Сводка дня">
+            <article class="brief-card sun">
+              <span>СЗД</span>
+              <strong id="szdBrief">0 / 5</strong>
+              <p>внешнее проявление</p>
+            </article>
+            <article class="brief-card moon">
+              <span>ВДА</span>
+              <strong id="vdaBrief">0 / 5</strong>
+              <p>внутренняя опора</p>
+            </article>
+            <article class="brief-card action">
+              <span>действия</span>
+              <strong id="actionBrief">0 / 0</strong>
+              <p id="dayNudge">сначала выбери один шаг</p>
+            </article>
+          </section>
+
           <form class="entry-form active" id="morningPanel" data-panel="morning">
             <section class="portal-section daily-setup">
               <div class="section-heading">
@@ -176,11 +194,28 @@
             <div class="map-intro">
               <p>Отмечай не идеальность, а факт проявления: 0 не было, 1 намечено, 2 проявлено. Источники здесь авторитетны внутри западной астрологической традиции.</p>
             </div>
-            <div class="source-dock" id="sourceDock"></div>
+            <div class="map-controls" role="group" aria-label="Фильтр показателей">
+              <button class="filter-button active" type="button" data-filter="all">Все</button>
+              <button class="filter-button" type="button" data-filter="szd">СЗД</button>
+              <button class="filter-button" type="button" data-filter="vda">ВДА</button>
+              <button class="filter-button" type="button" data-filter="active">Отмеченные</button>
+            </div>
+            <details class="source-dock-wrap">
+              <summary>Источники карты</summary>
+              <div class="source-dock" id="sourceDock"></div>
+            </details>
             <div class="indicator-grid" id="indicatorGrid"></div>
           </section>
 
           <form class="entry-form" id="eveningPanel" data-panel="evening">
+            <section class="portal-section day-summary">
+              <div class="section-heading">
+                <p class="eyebrow">авто-итог</p>
+                <h3>Главное за день</h3>
+              </div>
+              <div class="summary-grid" id="autoSummary"></div>
+            </section>
+
             <section class="portal-section">
               <div class="section-heading">
                 <p class="eyebrow">вечерняя сверка</p>
