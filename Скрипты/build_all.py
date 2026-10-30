@@ -23,7 +23,7 @@ def vol_dir(bld, code):
 
 
 def build(only=None):
-    import gen, acts2, acts_abk as AB, r, jvk, aso, prot2
+    import gen, acts2, acts_abk as AB, r, jvk, aso, prot2, pnr
     for bld in ('КПП', 'АБК'):
         if only and bld != only: continue
         acts = acts2.ACTS if bld == 'КПП' else AB.ACTS
@@ -36,8 +36,8 @@ def build(only=None):
                 r.build(code, OUT=d)
             else:
                 r.build(code, VOL=AB.RVOL, BLD='АБК', IDC=AB.ABK_ID[code], OUT=d)
-            jvk.OUT = aso.OUT = prot2.OUT = d
-            jvk.build(bld, code); aso.build(bld, code); prot2.build(bld, code)
+            jvk.OUT = aso.OUT = prot2.OUT = pnr.OUT = d
+            jvk.build(bld, code); aso.build(bld, code); prot2.build(bld, code); pnr.build(bld, code)
             print(f'{bld} / {code}: {len(list(Path(d).iterdir()))} файлов')
     if only in (None, 'КПП'):
         import reg_certs_kpp, remarks_kpp  # noqa: F401  (собираются при импорте)
