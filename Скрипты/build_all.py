@@ -42,7 +42,7 @@ def build(only=None):
     if only in (None, 'КПП'):
         import reg_certs_kpp, remarks_kpp  # noqa: F401  (собираются при импорте)
     if only in (None, 'АБК'):
-        import remarks_abk  # noqa: F401
+        import reg_certs_abk, remarks_abk  # noqa: F401
     shutil.rmtree(paths.TMP, ignore_errors=True)
 
 
