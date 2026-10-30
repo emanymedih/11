@@ -11,7 +11,8 @@ thin = Side(style="thin", color="000000"); BD = Border(left=thin, right=thin, to
 GREY = PatternFill("solid", fgColor="EDEDED")
 def f(sz=10, b=False, i=False): return Font(name=FN, size=sz, bold=b, italic=i)
 def al(h="left", v="top"): return Alignment(horizontal=h, vertical=v, wrap_text=True)
-OUT = '/home/claude/kv/jvk'
+import paths
+OUT = str(paths.TMP)
 RES_M = "Внешний осмотр, маркировка, целостность упаковки, количество — без замечаний. Документ о качестве в наличии."
 RES_E = "Внешний осмотр, маркировка, комплектность — без замечаний. Паспорт изготовителя в наличии (оригинал)."
 OK = "Соответствует. Допущено к применению"

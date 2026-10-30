@@ -11,12 +11,13 @@ thin = Side(style="thin", color="000000"); BD = Border(left=thin, right=thin, to
 GREY = PatternFill("solid", fgColor="EDEDED")
 def f(sz=10, b=False, i=False, color=None): return Font(name=FN, size=sz, bold=b, italic=i, color=color)
 def al(h="left", v="center"): return Alignment(horizontal=h, vertical=v, wrap_text=True)
-OUT = '/home/claude/kv/prot2'
+import paths
+OUT = str(paths.TMP)
 
 # ---------------- линии из кабельных журналов ----------------
 def L(n, a, b, cab, sec, ln): return dict(n=str(n).strip(), a=str(a).strip(), b=str(b).strip(), cab=str(cab).strip(), sec=str(sec).strip(), len=float(ln))
 def kpp_lines():
-    ws = openpyxl.load_workbook('/home/claude/pk/p17.xlsx', data_only=True)['Лист 1']
+    ws = openpyxl.load_workbook(paths.DATA / 'КЖ_КПП_итог.xlsx', data_only=True)['Лист 1']
     sec_map = {'АПС СОУЭ': 'СПС', 'СКС': 'СКС', 'СКУД': 'СКУД', 'СОТ': 'СОТ', 'СОТС': 'СОТС'}
     out = {k: [] for k in sec_map.values()}; sec = None
     ren = {'EMH19.1': 'EMG19.1', 'EMH20.1': 'EMG20.1', 'EMH20.2': 'EMG20.2'}
@@ -33,7 +34,7 @@ def kpp_lines():
         out[sec].append(L(v[0], ren.get(str(v[1]).strip(), v[1]), ren.get(str(v[2]).strip(), v[2]), cab, sec_, ln))
     return out
 def abk_lines():
-    ws = openpyxl.load_workbook('/home/claude/abk2/kj.xlsx', data_only=True)['Лист1']
+    ws = openpyxl.load_workbook(paths.DATA / 'КЖ_АБК.xlsx', data_only=True)['Лист1']
     out = {}; sys = None
     for r in ws.iter_rows(values_only=True):
         v = list(r[:10])

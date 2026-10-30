@@ -3,7 +3,8 @@ from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.worksheet.page import PageMargins
 import os
 F = "Times New Roman"
-OUT = '/home/claude/kv/out'
+import paths
+OUT = str(paths.TMP)
 BLD = 'КПП'; IDC = '16/1/26-ИД-КПП'
 thin = Side(style="thin", color="000000"); bd = Border(left=thin, right=thin, top=thin, bottom=thin)
 YEL = PatternFill("solid", fgColor="FFF2CC")

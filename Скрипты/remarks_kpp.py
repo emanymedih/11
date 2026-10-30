@@ -119,5 +119,6 @@ for n, row in enumerate(R, 1):
     c = t.add_row().cells
     for k, v in enumerate((n,) + row): aso.cell(c[k], v, 9, align=WD_ALIGN_PARAGRAPH.CENTER if k == 0 else WD_ALIGN_PARAGRAPH.LEFT)
 aso.fix_widths(t, W)
-doc.save('/home/claude/kv/kpp_new/Замечания к ИД КПП для проектировщика.docx')
+import paths
+doc.save(str(paths.OUT / 'Замечания к ИД КПП для проектировщика.docx'))
 print(len(R))

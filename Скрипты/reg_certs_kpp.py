@@ -1,5 +1,5 @@
 """Сводный реестр документов о качестве, прикладываемых к ИД здания КПП (по всем томам)."""
-import openpyxl, collections
+import openpyxl, collections, paths
 from docx import Document
 from docx.shared import Pt, Mm
 from docx.enum.section import WD_ORIENT
@@ -9,7 +9,7 @@ import aso, common as C
 SYS = ['СПС', 'СКУД', 'СКС', 'СОТ', 'СОТС']
 docs = collections.OrderedDict()
 for s in SYS:
-    ws = openpyxl.load_workbook(f'/home/claude/kv/kpp_new/Реестр документов о качестве {s} КПП.xlsx').active
+    ws = openpyxl.load_workbook(paths.OUT / 'КПП' / f'Том {s} КПП' / f'Реестр документов о качестве {s} КПП.xlsx').active
     for r in ws.iter_rows(values_only=True):
         if not (isinstance(r[0], int) and r[1] != 2): continue
         pos, mat, mf, un, q, kind, num, dt, srok, who, lst, act = r[:12]
@@ -78,5 +78,5 @@ for role, who in [('Составил: начальник отдела систе
     rc = sg.add_row().cells
     aso.cell(rc[0], role, 9, True); aso.cell(rc[1], f'____________________ / {who} /     «____» ____________ 2026 г.', 9, align=A.RIGHT)
 aso.fix_widths(sg, [Mm(150), Mm(127)])
-out = '/home/claude/kv/kpp_new/Сводный реестр документов о качестве КПП.docx'
+out = str(paths.OUT / 'КПП' / 'Сводный реестр документов о качестве КПП.docx')
 doc.save(out); print(out, len(docs), tl, len(eq))

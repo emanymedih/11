@@ -1,6 +1,7 @@
 import re, shutil, os, subprocess, sys, html
-BASE = '/home/claude/kv/base'
-OUT = '/home/claude/kv/out'
+import paths, zipfile
+BASE = str(paths.BASE)
+OUT = str(paths.TMP)
 os.makedirs(OUT, exist_ok=True)
 
 def esc(s): return html.escape(s, quote=False)
@@ -109,7 +110,10 @@ def build(act):
     shutil.copytree(BASE, d + '_u')
     open(d + '_u/word/document.xml', 'w', encoding='utf-8').write(x)
     if os.path.exists(d + '.docx'): os.remove(d + '.docx')
-    subprocess.run(f'cd "{d}_u" && zip -qXr "{d}.docx" .', shell=True, check=True)
+    with zipfile.ZipFile(d + '.docx', 'w', zipfile.ZIP_DEFLATED) as z:
+        names = sorted((os.path.relpath(os.path.join(rt, f), d + '_u').replace(os.sep, '/') for rt, _, fs in os.walk(d + '_u') for f in fs),
+                       key=lambda n: (n != '[Content_Types].xml', n))
+        for n in names: z.write(os.path.join(d + '_u', n), n)
     shutil.rmtree(d + '_u')
     return d + '.docx'
 
