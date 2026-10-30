@@ -38,7 +38,9 @@ def abk_lines():
     out = {}; sys = None
     for r in ws.iter_rows(values_only=True):
         v = list(r[:10])
-        if v[0] and all(c is None for c in v[1:]): sys = str(v[0]).strip(); out[sys] = []; continue
+        if v[0] and all(c is None for c in v[1:]):
+            sys = {'АПС,СОУЭ': 'СПС'}.get(str(v[0]).strip(), str(v[0]).strip()); out[sys] = []; continue
+        if not v[0] and v[1] and out[sys]: v[0] = out[sys][-1]['n']  # ветка без обозначения в КЖ — по предыдущей линии (ДПЛС2.1)
         if not v[0]: continue
         ln = v[9] if isinstance(v[9], (int, float)) else v[6]
         out[sys].append(L(v[0], v[1], v[2], v[4], v[5], ln))

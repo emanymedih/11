@@ -32,7 +32,8 @@ def vol(bld, code):
         cid = KPP_ID[code]
         return dict(rd=rd, rdl=rdl, id=cid, idl='лист 2', groups=groups, kj=f'{cid}.КЖ', so=f'{cid}.СО')
     name, rd, sheet, groups = A.RVOL[code]
-    return dict(rd=rd, rdl=A.RD[code][1], id=A.ID, idl=A.IDL[code], groups=groups, kj=f'{A.ID}.КЖ (раздел {code})', so=None)
+    cid = A.ABK_ID[code]
+    return dict(rd=rd, rdl=A.RD[code][1], id=cid, idl=A.IDL[code], groups=groups, kj=f'{cid}.КЖ', so=f'{cid}.СО')
 
 def docs_of(key):
     nm, mf, un, dks = r.M[key]

@@ -35,12 +35,14 @@ def build(only=None):
             if bld == 'КПП':
                 r.build(code, OUT=d)
             else:
-                r.build(code, VOL=AB.RVOL, BLD='АБК', IDC=AB.ID, OUT=d)
+                r.build(code, VOL=AB.RVOL, BLD='АБК', IDC=AB.ABK_ID[code], OUT=d)
             jvk.OUT = aso.OUT = prot2.OUT = d
             jvk.build(bld, code); aso.build(bld, code); prot2.build(bld, code)
             print(f'{bld} / {code}: {len(list(Path(d).iterdir()))} файлов')
     if only in (None, 'КПП'):
         import reg_certs_kpp, remarks_kpp  # noqa: F401  (собираются при импорте)
+    if only in (None, 'АБК'):
+        import remarks_abk  # noqa: F401
     shutil.rmtree(paths.TMP, ignore_errors=True)
 
 
