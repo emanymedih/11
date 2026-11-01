@@ -84,5 +84,5 @@ def build(bld):
         aso.cell(rc[0], role, 9, True); aso.cell(rc[1], f'____________________ / {who} /     «____» ____________ 2026 г.', 9, align=A.RIGHT)
     aso.fix_widths(sg, [Mm(150), Mm(127)])
     out = str(paths.OUT / bld / f'Сводный реестр документов о качестве {bld}.docx')
-    doc.save(out); print(out, len(docs), tl, len(eq))
+    aso.save(doc, out); print(out, len(docs), tl, len(eq))
     return docs, eq

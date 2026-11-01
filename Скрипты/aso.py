@@ -38,16 +38,30 @@ def lab(doc, label, text, sz=10):
     font(p.add_run(label + ' '), sz, True); font(p.add_run(text), sz, False, True)
     return p
 
+def _ins(tblPr, el):
+    """Вставка с соблюдением порядка элементов tblPr (OOXML): перед tblCellMar/tblLook/tblCaption."""
+    for old in tblPr.findall(el.tag): tblPr.remove(old)
+    for tag in ('w:tblCellMar', 'w:tblLook', 'w:tblCaption', 'w:tblDescription'):
+        x = tblPr.find(qn(tag))
+        if x is not None: x.addprevious(el); return
+    tblPr.append(el)
+
+def save(doc, path):
+    """Сохранение с исправлением w:zoom (python-docx пишет без обязательного w:percent)."""
+    z = doc.settings.element.find(qn('w:zoom'))
+    if z is not None and z.get(qn('w:percent')) is None: z.set(qn('w:percent'), '100')
+    doc.save(path)
+
 def borders(table):
     tbl = table._tbl; tblPr = tbl.tblPr
     b = OxmlElement('w:tblBorders')
     for e in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
         x = OxmlElement(f'w:{e}'); x.set(qn('w:val'), 'single'); x.set(qn('w:sz'), '4'); x.set(qn('w:color'), '000000'); b.append(x)
-    tblPr.append(b)
+    _ins(tblPr, b)
 
 def fix_widths(table, widths):
     tblPr = table._tbl.tblPr
-    lay = OxmlElement('w:tblLayout'); lay.set(qn('w:type'), 'fixed'); tblPr.append(lay)
+    lay = OxmlElement('w:tblLayout'); lay.set(qn('w:type'), 'fixed'); _ins(tblPr, lay)
     grid = table._tbl.tblGrid
     for gc, w in zip(grid.findall(qn('w:gridCol')), widths): gc.set(qn('w:w'), str(int(w.twips if hasattr(w,'twips') else w)))
     for row in table.rows:
@@ -125,7 +139,7 @@ def build(bld, code):
     para(doc, '', after=6)
     para(doc, 'Ведомость составил: начальник отдела систем технической безопасности ООО «АльтЭн» ____________ / Иванчук М.В. /', 10, before=6)
     os.makedirs(OUT, exist_ok=True)
-    p = f'{OUT}/Акт о смонтированном оборудовании {code} {bld}.docx'; doc.save(p); return p
+    p = f'{OUT}/Акт о смонтированном оборудовании {code} {bld}.docx'; save(doc, p); return p
 
 if __name__ == '__main__':
     for b in ('КПП', 'АБК'):

@@ -43,7 +43,12 @@ def abk_lines():
         if not v[0] and v[1] and out[sys]: v[0] = out[sys][-1]['n']  # ветка без обозначения в КЖ — по предыдущей линии (ДПЛС2.1)
         if not v[0]: continue
         ln = v[9] if isinstance(v[9], (int, float)) else v[6]
-        out[sys].append(L(v[0], v[1], v[2], v[4], v[5], ln))
+        cab, sec_ = str(v[4]).strip(), str(v[5]).strip()
+        # фактические марки (в КЖ проектировщика — STP/UTP; замечание АБК)
+        if cab.startswith('STP-4P-Cat.6'): cab, sec_ = 'Cabeus F/UTP Cat 6 LSZH', '4×2×0,52'
+        elif cab.startswith('UTP-4P-Cat.5e'): cab, sec_ = 'ParLan U/UTP Cat 5e 4×2×0,52 PVC', '4×2×0,52'
+        sec_ = sec_.replace('x', '×').replace('х', '×').replace('0.5', '0,5')
+        out[sys].append(L(v[0], v[1], v[2], cab, sec_, ln))
     return out
 LINES = {'КПП': kpp_lines(), 'АБК': abk_lines()}
 

@@ -11,6 +11,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 import common as C
 from equip import EQ
 from aso import font, para, lab, cell, borders, fix_widths, NORM, SYSG
+import aso
 import paths
 
 OUT = str(paths.TMP)
@@ -144,7 +145,7 @@ def ctx(bld, code):
 
 
 def save(doc, name):
-    os.makedirs(OUT, exist_ok=True); p = f'{OUT}/{name}.docx'; doc.save(p); return p
+    os.makedirs(OUT, exist_ok=True); p = f'{OUT}/{name}.docx'; aso.save(doc, p); return p
 
 
 def act_mount(bld, code):
