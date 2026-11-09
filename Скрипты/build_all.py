@@ -23,22 +23,29 @@ def vol_dir(bld, code):
 
 
 def build(only=None):
-    import gen, acts2, acts_abk as AB, r, jvk, aso, prot2, pnr
+    import gen, acts2, acts_abk as AB, r, jvk, aso, prot2, pnr, etalon as E
     for bld in ('КПП', 'АБК'):
         if only and bld != only: continue
         acts = acts2.ACTS if bld == 'КПП' else AB.ACTS
         for code in SYS:
             d = str(vol_dir(bld, code))
             gen.OUT = d
+            model = E.is_model(bld, code)
             for a in acts:
-                if a['no'].split('-')[1] == code: gen.build(a)
-            if bld == 'КПП':
-                r.build(code, OUT=d)
-            else:
-                r.build(code, VOL=AB.RVOL, BLD='АБК', IDC=AB.ABK_ID[code], OUT=d)
+                if a['no'].split('-')[1] == code: gen.build(E.aosr(a) if model else a)
             jvk.OUT = aso.OUT = prot2.OUT = pnr.OUT = d
-            jvk.build(bld, code); aso.build(bld, code); prot2.build(bld, code); pnr.build(bld, code)
+            if model:   # эталонный том (замечания АН 09.11.2026)
+                E.build_jvk(bld, code, d); E.build_vk(bld, code, d); E.build_aso(bld, code, d)
+                prot2.build(bld, code); pnr.build(bld, code); E.build_opis(bld, code, d)
+            else:
+                if bld == 'КПП':
+                    r.build(code, OUT=d)
+                else:
+                    r.build(code, VOL=AB.RVOL, BLD='АБК', IDC=AB.ABK_ID[code], OUT=d)
+                jvk.build(bld, code); aso.build(bld, code); prot2.build(bld, code); pnr.build(bld, code)
             print(f'{bld} / {code}: {len(list(Path(d).iterdir()))} файлов')
+        if any(b == bld for b, _ in E.MODEL):
+            E.build_reg(bld, str(paths.OUT / bld))   # 6-й том здания
     if only in (None, 'КПП'):
         import reg_certs_kpp, remarks_kpp  # noqa: F401  (собираются при импорте)
     if only in (None, 'АБК'):

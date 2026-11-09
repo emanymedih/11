@@ -1,3 +1,4 @@
+from pathlib import Path
 """Сводный реестр документов о качестве, прикладываемых к ИД здания (КПП / АБК, по всем томам)."""
 import openpyxl, collections, paths
 from docx import Document
@@ -13,7 +14,14 @@ SYS = ['СПС', 'СКУД', 'СКС', 'СОТ', 'СОТС']
 def build(bld):
     docs = collections.OrderedDict()
     for s in SYS:
-        ws = openpyxl.load_workbook(paths.OUT / bld / f'Том {s} {bld}' / f'Реестр документов о качестве {s} {bld}.xlsx').active
+        f = paths.OUT / bld / f'Том {s} {bld}' / f'Реестр документов о качестве {s} {bld}.xlsx'
+        if not f.exists():   # эталонный том: реестр тома заменён «Реестром паспортов и сертификатов» — сводный по прежней версии
+            import r, tempfile, acts_abk as AB
+            tmp = tempfile.mkdtemp()
+            if bld == 'КПП': r.build(s, OUT=tmp)
+            else: r.build(s, VOL=AB.RVOL, BLD='АБК', IDC=AB.ABK_ID[s], OUT=tmp)
+            f = Path(tmp) / f'Реестр документов о качестве {s} {bld}.xlsx'
+        ws = openpyxl.load_workbook(f).active
         for r in ws.iter_rows(values_only=True):
             if not (isinstance(r[0], int) and r[1] != 2): continue
             pos, mat, mf, un, q, kind, num, dt, srok, who, lst, act = r[:12]

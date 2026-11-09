@@ -95,6 +95,8 @@ def setup(ws, W):
 
 def protocol(wb, bld, code, sample, seed):
     lan = code in LAN; lines = LINES[bld][code]; v = C.vol(bld, code); dt = C.DATES[bld]['prot']
+    import etalon as E
+    if E.is_model(bld, code): dt = E.DT[(bld, code)]['prot']   # протокол — к акту на кабельные линии, в день окончания монтажа КЛ
     ws = wb.create_sheet(('Образец' if sample else 'Бланк'))
     W = ([5, 12, 11, 15, 22, 9, 9, 15, 10, 10, 10, 11] if lan else [5, 15, 14, 18, 22, 10, 8, 11, 13, 13, 10, 13])
     setup(ws, W); last = chr(64 + len(W)); r = 1
