@@ -80,6 +80,16 @@ def rng(ns):
     return f'стр. {ns[0]}' if len(ns) == 1 else (f'стр. {ns[0]}–{ns[-1]}' if ns == list(range(ns[0], ns[-1] + 1)) else 'стр. ' + ', '.join(map(str, ns)))
 
 # ---------------- АОСР эталонного тома ----------------
+def rekv(d):
+    """Реквизиты документа для п. 3 АОСР; паспорт без номера и даты — «б/н, б/д» (АН, 09.11.2026)."""
+    import acts2
+    t = acts2._rekv(d)
+    return t + ', б/н, б/д' if r.D[d][1] in ('—', None, '') else t
+
+def ids(bld, code):
+    """Исполнительные схемы тома (№ схемы = № акта)."""
+    return [k for k in SCH if bld in k.split('-') and code in k.split('-')]
+
 def aosr(a):
     """Правка АОСР КПП для эталонного тома (вызывается до gen.build)."""
     no = a['no']; code, bld = no.split('-')[1], no.split('-')[2]
@@ -95,7 +105,7 @@ def aosr(a):
             nm, mf, un, dks = r.M[key]
             dks = dks if isinstance(dks, list) else [dks]
             ns = lines_of(bld, code, key=key, act=no)
-            docs = '; '.join(f'{acts2._rekv(d)} (реестр, стр. {n})' for d, n in zip(dks, ns))
+            docs = '; '.join(f'{rekv(d)} (реестр, стр. {n})' for d, n in zip(dks, ns))
             p3.append(f'{nm} — {docs};')
     p3[-1] = p3[-1][:-1] + '.'
     a['p3'] = p3
@@ -109,7 +119,7 @@ def aosr(a):
     apps = [sch(no) + '.']
     if no.startswith('3-'):
         apps += [f'Кабельный журнал {v["kj"]}.', f'Протокол измерения сопротивления изоляции № {prot_no(bld, code)} от {d["prot"]}.']
-    apps.append(f'{reg_full(bld)}, {rng(lines_of(bld, code, act=no))} (копии документов о качестве — в томе «{REG_NAME}» здания {bld}).')
+    apps.append(f'{reg_full(bld)}, {rng(lines_of(bld, code, act=no))} (отдельный том).')
     a['apps'] = apps
     a['p7'] = [x.replace('Прокладка кабельных линий', 'Монтаж кабельных линий') for x in a['p7']]
     a['dop'] = [re.sub(r'Проходки по ИД(?: [^,]+)?, лист \d+', f'Проходки — по исполнительной схеме № {no}', x)
@@ -197,7 +207,8 @@ def build_vk(bld, code, out):
             cell(rr[k], x, 8, align=A.CENTER if k in (0, 3, 6) else A.LEFT)
     fix_widths(t, W)
     p = para(doc, before=6); font(p.add_run('Заключение: '), 10, True)
-    font(p.add_run('вышеперечисленное оборудование соответствует рабочей документации, документы о качестве в наличии; оборудование допускается к монтажу.'), 10, False, True)
+    font(p.add_run('вышеперечисленное оборудование допускается к монтажу.'), 10, False, True)
+    para(doc, 'Акт составлен в 3 экземплярах.', 10, before=2)
     signs(doc, (Mm(170), Mm(90)))
     path = f'{out}/Акт входного контроля оборудования {code} {bld}.docx'; save(doc, path); return path
 
@@ -294,8 +305,9 @@ def build_jvk(bld, code, out):
     p, n = jvk.build(bld, code)
     wb = load_workbook(p); ws = wb.active
     ws['A2'] = 'входного контроля строительных материалов, изделий и кабельной продукции'
-    ws['A9'] = ws['A9'].value.replace('; оборудование — по исполнительной документации', '')
-    ws['A9'] = ws['A9'].value + f' Оборудование — акт входного контроля № {vk_no(bld, code)} от {DT[(bld, code)]["vk"]}.'
+    v = C.vol(bld, code)
+    ws['A9'] = (f'Рабочая документация {v["rd"]}, {v["rdl"]}; исполнительные схемы № ' + ', '.join(x for x in ids(bld, code) if not x.endswith('-О'))
+                + f'; кабельный журнал {v["kj"]}; спецификация {v["so"]}. Количество материалов — по АОСР № {C.aosr_list(bld, code)}.')
     ws['A11'] = f'Журнал начат: {C.DATES[bld]["mat"]}                    Журнал окончен: {C.DATES[bld]["mat"]}'
     # удалить раздел 2 (оборудование) и подписи; дописать ссылки на строки реестра, заключение и подписи
     s2 = next(rw for rw in range(1, ws.max_row + 1) if str(ws.cell(rw, 1).value or '').startswith('Раздел 2'))
@@ -308,7 +320,11 @@ def build_jvk(bld, code, out):
         key = next((k for k, m in r.M.items() if m[0] == nm), None)
         if isinstance(ws.cell(rw, 1).value, int) and key:
             ns = sorted({x[0] for x in rl if x[10] == key})
-            ws.cell(rw, 7).value = ws.cell(rw, 7).value + f' ({REG_NAME.lower().replace("реестр", "Реестр")}, {rng(ns)})'
+            mine = [x for x in rl if x[10] == key]
+            def fmt(x):
+                if x[4] == 'б/н': return f'{x[3]}, б/н, б/д, {x[7].replace("Изготовитель ", "изготовитель ")}'
+                return f'{x[3]} № {x[4].replace("№ ", "")} от {x[5]}' + (f', действует {x[6]}' if x[6] not in ('—', '', None) else '')
+            ws.cell(rw, 7).value = '; '.join(fmt(x) for x in mine) + f' (Реестр паспортов и сертификатов, {rng(ns)})'
             ws.cell(rw, 11).value = ws.cell(rw, 11).value.replace('АОСР № ', 'АОСР № ')
     from openpyxl.styles import Font, Alignment
     last = 'K'; rw = s2 + 1
@@ -355,9 +371,9 @@ def build_opis(bld, code, out):
         if no.startswith('3-'):
             rows.append(('Кабельный журнал', v['kj'], dt_, None, 1))
             rows.append(('Протокол измерения сопротивления изоляции', prot_no(bld, code), d['prot'], f(f'Протокол сопротивления изоляции {code} {bld} (образец и бланк).xlsx'), 1))
-    rows.append(('Акт входного контроля оборудования', vk_no(bld, code), d['vk'], f(f'Акт входного контроля оборудования {code} {bld}.docx'), None))
     rows.append(('Акт смонтированного оборудования (с ведомостью — приложение 1)', o_no(bld, code), d['eq_end'], f(f'Акт смонтированного оборудования {code} {bld}.docx'), None))
     rows.append((f'Исполнительная схема «{SCH[o_no(bld, code)]}»', o_no(bld, code), d['eq_end'], None, 1))
+    rows.append(('Акт входного контроля оборудования (приложение 3 к акту смонтированного оборудования)', vk_no(bld, code), d['vk'], f(f'Акт входного контроля оборудования {code} {bld}.docx'), None))
     rows.append(('Спецификация установленных изделий и материалов', v['so'], '', None, 1))
     for title, key, fn, dd in [('Акт об окончании монтажных работ', 'm', f'Акт об окончании монтажных работ {code} {bld}.docx', pd['mount']),
                                ('Акт о проведении индивидуальных испытаний (72 ч)', 'i', f'Акт индивидуальных испытаний (72 ч) {code} {bld}.docx', pd['end']),
@@ -393,8 +409,10 @@ def build_opis(bld, code, out):
     para(doc, '', after=4)
     sg = doc.add_table(rows=0, cols=2)
     for role, who in [('Передал: представитель лица, выполнившего работы', 'Иванчук М.В.'),
-                      ('Принял: представитель лица, осуществляющего строительство', 'Белоногов И.Ю.')]:
+                      ('Принял: представитель лица, осуществляющего строительство', 'Белоногов И.Ю.'),
+                      ('Принял: ', '')]:
         rc = sg.add_row().cells
-        cell(rc[0], role, 9, True); cell(rc[1], f'____________ / {who} /  «___» ________ 2026 г.', 9, align=A.RIGHT)
+        cell(rc[0], role + ('______________________________' if not who else ''), 9, True)
+        cell(rc[1], f'____________ / {who or "____________"} /  «___» ________ 2026 г.', 9, align=A.RIGHT)
     fix_widths(sg, [Mm(80), Mm(95)])
     path = f'{out}/Реестр передачи ИД (опись тома) {code} {bld}.docx'; save(doc, path); return path, tot
